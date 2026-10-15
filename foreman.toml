@@ -1,0 +1,13 @@
+# This is Foreman's configuration file. You can edit it to tell Foreman about
+# new tools that you'd like to install, or to change versions of tools you
+# already have.
+
+# When adding new tools, make sure to run `foreman install` so that their
+# binaries are installed.
+
+[tools]
+rojo = { github = "rojo-rbx/rojo", version = "=7.6.1" }
+darklua = { github = "seaofvoices/darklua", version = "=0.19.0" }
+lune = { github = "lune-org/lune", version = "=0.10.5"}
+stylua = { github = "JohnnyMorganz/stylua", version = "*" }
+wally = { github = "upliftgames/wally", version = "=0.3.2" }

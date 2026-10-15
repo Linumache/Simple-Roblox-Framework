@@ -1,0 +1,6 @@
+indent_type = "Spaces"
+collapse_simple_statement = "Always"
+syntax = "Luau"
+
+[sort_requires]
+enabled = true

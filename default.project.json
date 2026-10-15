@@ -1,0 +1,38 @@
+{
+  "name": "Simple-Roblox-Framework",
+  "tree": {
+    "$className": "DataModel",
+    "ServerScriptService": {
+      "src": {
+        "$path": "src/Server"
+      },
+      "node_modules": {
+        "$path": "node_modules"
+      }
+    },
+    "StarterPlayer": {
+      "StarterPlayerScripts": {
+        "src": {
+          "$path": "src/Client"
+        }
+      }
+    },
+    "ReplicatedStorage": {
+      "src": {
+        "$path": "src/Shared"
+      }
+    }
+  },
+  "globIgnorePaths": [
+    "**/node_modules/.pnpm",
+    "**/node_modules/.pnpm_patches",
+    "**/node_modules/.modules.yaml",
+    "**/node_modules/.pnpm-workspace-state-v1.json",
+    "**/*.spec.lua",
+    "**/jest.config.lua",
+    "**/@quentystudios",
+    "**/@quenty/nevermore-test-runner",
+    "**/node_modules/**/test",
+    "**/node_modules/**/node_modules"
+  ]
+}

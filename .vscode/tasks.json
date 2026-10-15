@@ -1,0 +1,19 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "rojo server",
+      "type": "shell",
+      "command": "rojo serve",
+      "presentation": {
+        "reveal": "silent",
+        "revealProblems": "onProblem",
+        "focus": false,
+        "showReuseMessage": false
+      },
+      "runOptions": {
+        "runOn": "folderOpen"
+      }
+    }
+  ]
+}

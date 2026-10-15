@@ -1,0 +1,12 @@
+{
+  "name": "Simple-Roblox-Framework",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "@quenty/loader": "^10.11.2",
+    "@quenty/maid": "^3.12.1",
+    "@quenty/rx": "^13.34.2",
+    "@quenty/servicebag": "^11.21.2",
+    "@quenty/signal": "^7.13.3"
+  }
+}

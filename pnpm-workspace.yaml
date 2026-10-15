@@ -1,0 +1,19 @@
+allowBuilds:
+  '@quenty/baseobject': set this to true or false
+  '@quenty/cancellabledelay': set this to true or false
+  '@quenty/canceltoken': set this to true or false
+  '@quenty/deferred': set this to true or false
+  '@quenty/ducktype': set this to true or false
+  '@quenty/loader': set this to true or false
+  '@quenty/maid': set this to true or false
+  '@quenty/math': set this to true or false
+  '@quenty/nevermore-test-runner': set this to true or false
+  '@quenty/promise': set this to true or false
+  '@quenty/rx': set this to true or false
+  '@quenty/servicebag': set this to true or false
+  '@quenty/signal': set this to true or false
+  '@quenty/symbol': set this to true or false
+  '@quenty/table': set this to true or false
+  '@quenty/throttle': set this to true or false
+  '@quenty/typeutils': set this to true or false
+nodeLinker: hoisted

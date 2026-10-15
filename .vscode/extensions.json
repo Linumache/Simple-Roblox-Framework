@@ -1,0 +1,11 @@
+{
+  "recommendations": [
+    "johnnymorganz.luau-lsp",
+    "johnnymorganz.stylua",
+    "tamasfe.even-better-toml",
+    "bierner.markdown-preview-github-styles"
+  ],
+  "unwantedRecommendations": [
+    "Nightrains.robloxlsp"
+  ]
+}

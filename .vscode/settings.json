@@ -1,0 +1,23 @@
+{
+  "files.associations": {
+    "*.luaurc": "json"
+  },
+  "[json]": {
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true
+  },
+  "[jsonc]": {
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true
+  },
+  "luau-lsp.ignoreGlobs": [
+    "**/node_modules/**",
+    "Packages/**"
+  ],
+  "workbench.editor.customLabels.patterns": {
+    "**/init.lua": "${dirname} (init.lua)",
+    "**/init.luau": "${dirname} (init.luau)"
+  },
+  "luau-lsp.completion.imports.requireStyle": "nearestAbsolute",
+  "stylua.targetReleaseVersion": "latest"
+}

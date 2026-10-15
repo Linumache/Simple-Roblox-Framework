@@ -1,0 +1,42 @@
+title = "Simple-Roblox-Framework"
+gitRepoUrl = "https://github.com/Linumache/Simple-Roblox-Framework"
+gitSourceBranch = "main"
+
+[docusaurus]
+organizationName = "Linumache"
+projectName = "Simple-Roblox-Framework"
+url = "https://Linumache.github.io"
+baseUrl = "/Simple-Roblox-Framework/"
+
+[home]
+enabled = false
+
+[[classOrder]]
+section = "Core"
+
+[[classOrder.items]]
+section = "Runtime"
+classes = [ "Runtime", "ErrorContext" ]
+
+[[classOrder.items.items]]
+section = "AppContext"
+classes = [ "AppContext", "FeatureRegistry", "SignalMemo", "ThreadProxy", "ThreadScheduler" ]
+
+[[classOrder.items]]
+section = "Logger"
+classes = [ "Logger" ]
+
+[[classOrder.items.items]]
+section = "LoggerOutput"
+classes = [ "LoggerOutput", "RingBuffer" ]
+
+[[classOrder]]
+section = "Modules"
+
+[[classOrder.items]]
+section = "App"
+classes = [ "AppBuilder" ]
+
+[[classOrder]]
+section = "Packages"
+classes = [ "Nevermore" ]
