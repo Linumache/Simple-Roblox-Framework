@@ -55,7 +55,7 @@ function ValueScope.Set(self: RuntimeTypes.ValueScope, Name: string, Value: any)
 ]=]
 function ValueScope.Has(self: RuntimeTypes.ValueScope, Name: string) return self._Store:Has(Name) end
 
---[=[ 
+--[=[
    @method Get
    @within ValueScope
    @param Name string

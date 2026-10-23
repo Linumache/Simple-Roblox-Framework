@@ -124,7 +124,7 @@ function TaskScheduler.Delay<A..., R...>(self: RuntimeTypes.TaskScheduler, Time:
     return ThreadProxy.new(Thread, function() Maid._tasks[TaskId] = nil end)
 end
 
---[=[ 
+--[=[
    @method RunTracked
    @within TaskScheduler
    @param Task (A...) -> R...

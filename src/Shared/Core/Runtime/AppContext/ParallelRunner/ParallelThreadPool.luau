@@ -148,7 +148,7 @@ function ParallelThreadPool.Resize(self: RuntimeTypes.ParallelThreadPool, NewSiz
     end
 end
 
---[=[ 
+--[=[
    @method Fill
    @within ParallelThreadPool
 ]=]

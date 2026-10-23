@@ -145,7 +145,7 @@ end
 ]=]
 function ValueStore.Has(self: RuntimeTypes.ValueStore, Name: string) return GetEntry(self, Name) ~= nil end
 
---[=[ 
+--[=[
    @method Get
    @within ValueStore
    @param Name string

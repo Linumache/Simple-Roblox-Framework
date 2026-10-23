@@ -56,7 +56,7 @@ function ParallelThread.EnsureReady(self: RuntimeTypes.ParallelThread)
     if not Actor:GetAttribute("IsReady") then Actor:GetAttributeChangedSignal("IsReady"):Wait() end
 end
 
---[=[ 
+--[=[
    @method SendMessage
    @within ParallelThread
    @param Topic string
