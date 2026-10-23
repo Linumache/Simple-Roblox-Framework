@@ -4,9 +4,15 @@
 
 --[=[
     @within RuntimeConstants
-    @interface Constants
-    .ParallelThreadPoolDefaultSize 4
-    .ParallelThreadContextDefaultTimeBudget 0.004
+    @prop ParallelThreadPoolDefaultSize number
+    @tag global
+    @readonly
+]=]
+--[=[
+    @within RuntimeConstants
+    @prop ParallelThreadContextDefaultTimeBudget number
+    @tag global
+    @readonly
 ]=]
 return table.freeze({
     ParallelThreadPoolDefaultSize = 4,
