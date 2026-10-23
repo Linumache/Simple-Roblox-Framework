@@ -70,7 +70,7 @@ end
     @method OnJobFinished
     @within ParallelThread
     @param Identity: string
-    @param Callback () -> ()
+    @param Callback (Succeeded: boolean, ...any) -> ()
     @return RBXScriptConnection
 ]=]
 function ParallelThread.OnJobFinished(
@@ -79,10 +79,10 @@ function ParallelThread.OnJobFinished(
     Callback: (Succeeded: boolean, ...any) -> ()
 )
     local Connection: RBXScriptConnection
-    Connection = self.Finished:Connect(function(FinishedIdentity: string, ...: any)
+    Connection = self.Finished:Connect(function(FinishedIdentity: string, Succeeded: boolean, ...: any)
         if FinishedIdentity == Identity then
             Connection:Disconnect()
-            Callback(...)
+            Callback(Succeeded, ...)
         end
     end)
     return Connection
