@@ -11,7 +11,19 @@ local AppContext = require("@self/AppContext")
 local ErrorContext = require("@self/ErrorContext")
 local RuntimeTypes = require("@self/RuntimeTypes")
 
-local Runtime = {}
+--[=[
+    @within Runtime
+    @prop Version { Major: number, Minor: number, Patch: number }
+    @tag global
+    @readonly
+]=]
+local Runtime = {
+    Version = table.freeze({
+        Major = 2,
+        Minor = 1,
+        Patch = 0,
+    }),
+}
 
 --[=[
     @within Runtime
