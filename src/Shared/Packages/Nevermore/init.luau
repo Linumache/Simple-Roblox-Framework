@@ -33,4 +33,8 @@ local function GetLoader(NodeModules: Instance) return (require)((NodeModules ::
 local NodeModules = GetNodeModules(RunService:IsServer())
 local Loader = GetLoader(NodeModules)
 
-return Loader.bootstrapGame(NodeModules) :: (string) -> any
+debug.profilebegin("Nevermore Bootstrap")
+local Nevermore = Loader.bootstrapGame(NodeModules) :: (string) -> any
+debug.profileend()
+
+return Nevermore
