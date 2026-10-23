@@ -66,4 +66,4 @@ Yet another simple and flexible framework template for Roblox games and projects
 
 ## Examples
 
-See example apps at [Apps](/src/Server/Apps)
+See example apps at [Server/Apps](/src/Server/Apps) and [Client/Apps](/src/Client/Apps).
