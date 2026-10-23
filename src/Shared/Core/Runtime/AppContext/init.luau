@@ -2,13 +2,13 @@
     @class AppContext
 ]=]
 
-local FeatureRegistry = require("@self/FeatureRegistry")
-local Logger = require("../Logger")
 local Nevermore = require("../../Packages/Nevermore")
 local NevermoreTypes = require("../../Packages/Nevermore/NevermoreTypes")
-local SignalMemo = require("@self/SignalMemo")
-local ThreadScheduler = require("@self/ThreadScheduler")
-local Types = require("./Types")
+local ParallelRunner = require("@self/ParallelRunner")
+local TaskScheduler = require("@self/TaskScheduler")
+local RuntimeTypes = require("./RuntimeTypes")
+local ValueScope = require("@self/ValueStore/ValueScope")
+local ValueStore = require("@self/ValueStore")
 
 local Maid = Nevermore("Maid") :: NevermoreTypes.MaidModule
 local ServiceBag = Nevermore("ServiceBag") :: NevermoreTypes.ServiceBagModule
@@ -16,21 +16,11 @@ local ServiceBag = Nevermore("ServiceBag") :: NevermoreTypes.ServiceBagModule
 local AppContext = {}
 AppContext.__index = AppContext
 
+local GLOBAL_STORE = ValueStore.new()
+
 --[=[
     @within AppContext
-    @prop Features FeatureRegistry
-    @tag global
-]=]
-AppContext.Features = FeatureRegistry.new()
---[=[
-    @within AppContext
-    @prop Logger Logger
-    @tag global
-]=]
-AppContext.Logger = Logger.new()
---[=[
-    @within AppContext
-    @prop Nevermore (string) -> any
+    @prop Nevermore (ModuleName: string) -> any
     @tag global
     Requires an installed Nevermore package module.
 ]=]
@@ -51,33 +41,40 @@ AppContext.Nevermore = Nevermore
 ]=]
 --[=[
     @within AppContext
-    @prop RBXSignal SignalMemo
-]=]
---[=[
-    @within AppContext
-    @prop Scheduler ThreadScheduler
+    @prop Scheduler TaskScheduler
 ]=]
 --[=[
     @within AppContext
     @prop Services ServiceBag
 ]=]
+--[=[
+    @within AppContext
+    @prop Values ValueScope
+]=]
+--[=[
+    @within AppContext
+    @prop Parallel ParallelRunner
+]=]
 function AppContext.new(Name: string)
     local Maid = Maid.new()
-    local RBXSignal = SignalMemo.new()
-    local Scheduler = ThreadScheduler.new()
+    local Scheduler = TaskScheduler.new()
+    local Parallel = ParallelRunner.new(Scheduler)
+    local Values = ValueScope.new(GLOBAL_STORE)
     local Services = ServiceBag.new() :: NevermoreTypes.ServiceBag
 
-    Maid:GiveTask(RBXSignal)
     Maid:GiveTask(Scheduler)
+    Maid:GiveTask(Parallel)
+    Maid:GiveTask(Values)
     Maid:GiveTask(Services)
 
     local self = setmetatable({
         Name = Name,
         Maid = Maid,
-        RBXSignal = RBXSignal,
         Scheduler = Scheduler,
+        Parallel = Parallel,
+        Values = Values,
         Services = Services,
-    }, AppContext) :: Types.AppContext
+    }, AppContext) :: RuntimeTypes.AppContext
     return self
 end
 
@@ -86,7 +83,7 @@ end
     @within AppContext
     @return Maid
 ]=]
-function AppContext.MakeMaid(self: Types.AppContext)
+function AppContext.MakeMaid(self: RuntimeTypes.AppContext)
     local Maid = Maid.new()
     self.Maid:GiveTask(Maid)
     return Maid
@@ -96,6 +93,6 @@ end
     @method Destroy
     @within AppContext
 ]=]
-function AppContext.Destroy(self: Types.AppContext) self.Maid:Destroy() end
+function AppContext.Destroy(self: RuntimeTypes.AppContext) self.Maid:Destroy() end
 
 return AppContext

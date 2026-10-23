@@ -27,48 +27,69 @@ export type Maid = typeof(setmetatable(
 
 export type SignalHandler = (...any) -> ()
 
-export type Connection = typeof(setmetatable(
+export type Connection<T...> = typeof(setmetatable(
     {} :: {
         _memoryCategory: string,
-        _signal: Signal?,
+        _signal: Signal<T...>?,
         _fn: SignalHandler?,
     },
     {} :: {
         __index: {
             ClassName: "Connection",
-            new: (signal: Signal, fn: SignalHandler) -> Connection,
-            IsConnected: (self: Connection) -> boolean,
-            Disconnect: (self: Connection) -> (),
-            Destroy: (self: Connection) -> (),
+            new: (signal: Signal<T...>, fn: SignalHandler) -> Connection<T...>,
+            IsConnected: (self: Connection<T...>) -> boolean,
+            Disconnect: (self: Connection<T...>) -> (),
+            Destroy: (self: Connection<T...>) -> (),
         },
     }
 ))
 
-export type Signal = typeof(setmetatable(
+export type Signal<T... = ...any> = typeof(setmetatable(
     {} :: {
-        _handlerListHead: Connection | false,
+        _handlerListHead: Connection<T...> | false,
     },
     {} :: {
         __index: {
             ClassName: "Signal",
-            new: () -> Signal,
+            new: () -> Signal<T...>,
             isSignal: (value: any) -> boolean,
-            Connect: (self: Signal, fn: SignalHandler) -> Connection,
-            GetConnectionCount: (self: Signal) -> number,
-            DisconnectAll: (self: Signal) -> (),
-            Fire: (self: Signal, ...any) -> (),
-            Wait: (self: Signal) -> ...any,
-            Once: (self: Signal, fn: SignalHandler) -> Connection,
-            Destroy: (self: Signal) -> (),
+            Connect: (self: Signal<T...>, fn: SignalHandler) -> Connection<T...>,
+            GetConnectionCount: (self: Signal<T...>) -> number,
+            DisconnectAll: (self: Signal<T...>) -> (),
+            Fire: (self: Signal<T...>, T...) -> (),
+            Wait: (self: Signal<T...>) -> T...,
+            Once: (self: Signal<T...>, fn: SignalHandler) -> Connection<T...>,
+            Destroy: (self: Signal<T...>) -> (),
         },
     }
 ))
 
 export type OnSubscribe<T...> = (subscription: Subscription<T...>) -> MaidTask
 
-export type Transformer<T..., U...> = (observable: Observable<T...>) -> Observable<U...>
+export type Transformer = (observable: Observable<...any>) -> ObservableAny
 
-export type Observable<T...> = typeof(setmetatable(
+export type ObservableAny = typeof(setmetatable(
+    {} :: {
+        _source: string?,
+        _onSubscribe: OnSubscribe<any?>?,
+    },
+    {} :: {
+        __index: {
+            ClassName: "Observable",
+            new: (onSubscribe: OnSubscribe<any?>) -> ObservableAny,
+            isObservable: (value: any) -> boolean,
+            Pipe: (self: ObservableAny, transformers: Transformer) -> ObservableAny,
+            Subscribe: (
+                self: ObservableAny,
+                fireCallback: FireCallback<any?>?,
+                failCallback: FailCallback?,
+                completeCallback: CompleteCallback?
+            ) -> Subscription<any?>,
+        },
+    }
+))
+
+export type Observable<T... = ...any> = typeof(setmetatable(
     {} :: {
         _source: string?,
         _onSubscribe: OnSubscribe<T...>?,
@@ -78,6 +99,7 @@ export type Observable<T...> = typeof(setmetatable(
             ClassName: "Observable",
             new: (onSubscribe: OnSubscribe<T...>) -> Observable<T...>,
             isObservable: (value: any) -> boolean,
+            Pipe: (self: Observable<T...>, transformers: Transformer) -> ObservableAny,
             Subscribe: (
                 self: Observable<T...>,
                 fireCallback: FireCallback<T...>?,
@@ -94,7 +116,7 @@ export type FireCallback<T...> = (T...) -> ()
 export type CompleteCallback = () -> ()
 export type FailCallback = (...any) -> ()
 
-export type Subscription<T...> = typeof(setmetatable(
+export type Subscription<T... = ...any> = typeof(setmetatable(
     {} :: {
         _state: SubscriptionState,
         _cleanupTask: MaidTask?,
@@ -211,7 +233,8 @@ export type ServiceInitLogger = typeof(setmetatable(
 export type MaidModule = typeof(require("@game/ServerScriptService/node_modules/@quenty/maid/Shared/Maid"))
 export type SignalModule = typeof(require("@game/ServerScriptService/node_modules/@quenty/signal/Shared/Signal"))
 export type ObservableModule = typeof(require("@game/ServerScriptService/node_modules/@quenty/rx/Shared/Observable"))
-export type SubscriptionModule = typeof(require("@game/ServerScriptService/node_modules/@quenty/rx/Shared/Subscription"))
+export type SubscriptionModule =
+    typeof(require("@game/ServerScriptService/node_modules/@quenty/rx/Shared/Subscription"))
 export type RxModule = typeof(require("@game/ServerScriptService/node_modules/@quenty/rx/Shared/Rx"))
 export type ServiceBagModule = typeof(require(
     "@game/ServerScriptService/node_modules/@quenty/servicebag/Shared/ServiceBag"

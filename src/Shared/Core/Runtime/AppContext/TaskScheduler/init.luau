@@ -1,16 +1,16 @@
 --[=[
-    @class ThreadScheduler
+    @class TaskScheduler
 ]=]
 
 local Nevermore = require("../../../Packages/Nevermore")
 local NevermoreTypes = require("../../../Packages/Nevermore/NevermoreTypes")
-local ThreadProxy = require("./ThreadProxy")
-local Types = require("../Types")
+local ThreadProxy = require("@self/ThreadProxy")
+local RuntimeTypes = require("../RuntimeTypes")
 
 local Maid = Nevermore("Maid") :: NevermoreTypes.MaidModule
 
-local ThreadScheduler = {}
-ThreadScheduler.__index = ThreadScheduler
+local TaskScheduler = {}
+TaskScheduler.__index = TaskScheduler
 
 type ImmediateContext = typeof({
     [1] = true, -- NotCompleted
@@ -42,37 +42,37 @@ end
 
 local function RunTracked<A..., R...>(Maid: NevermoreTypes.Maid, Function: (A...) -> R..., ...: A...): R...
     local TaskId = Maid:GiveTask(coroutine.running())
-    local Succeeded, Result = pcall(Function :: any, ...)
+    local Result = table.pack(pcall(Function :: any, ...))
     Maid._tasks[TaskId] = nil
 
-    if not Succeeded then error(Result, 0) end
-    return Result
+    if not Result[1] then error(Result[2], 0) end
+    return table.unpack(Result, 2, Result.n)
 end
 
 --[=[
-    @within ThreadScheduler
-    @return ThreadScheduler
+    @within TaskScheduler
+    @return TaskScheduler
 ]=]
 --[=[
-    @within ThreadScheduler
+    @within TaskScheduler
     @prop _Maid Maid
     @private
 ]=]
-function ThreadScheduler.new()
+function TaskScheduler.new()
     local self = setmetatable({
         _Maid = Maid.new(),
-    }, ThreadScheduler) :: Types.ThreadScheduler
+    }, TaskScheduler) :: RuntimeTypes.TaskScheduler
     return self
 end
 
 --[=[
     @method Spawn
-    @within ThreadScheduler
+    @within TaskScheduler
     @param Task (A...) -> R...
     @param ... A...
     @return ThreadProxy
 ]=]
-function ThreadScheduler.Spawn<A..., R...>(self: Types.ThreadScheduler, Task: (A...) -> R..., ...: A...)
+function TaskScheduler.Spawn<A..., R...>(self: RuntimeTypes.TaskScheduler, Task: (A...) -> R..., ...: A...)
     local Maid = self._Maid
 
     local Context: ImmediateContext = { true }
@@ -89,12 +89,12 @@ end
 
 --[=[
     @method Defer
-    @within ThreadScheduler
+    @within TaskScheduler
     @param Task (A...) -> R...
     @param ... A...
     @return ThreadProxy
 ]=]
-function ThreadScheduler.Defer<A..., R...>(self: Types.ThreadScheduler, Task: (A...) -> R..., ...: A...)
+function TaskScheduler.Defer<A..., R...>(self: RuntimeTypes.TaskScheduler, Task: (A...) -> R..., ...: A...)
     local Maid = self._Maid
 
     local Context: Context = {}
@@ -102,18 +102,18 @@ function ThreadScheduler.Defer<A..., R...>(self: Types.ThreadScheduler, Task: (A
 
     local TaskId = Maid:GiveTask(Thread)
     Context[1] = TaskId
-    return ThreadProxy.new(Thread, function() Maid[TaskId] = nil end)
+    return ThreadProxy.new(Thread, function() Maid._tasks[TaskId] = nil end)
 end
 
 --[=[
     @method Delay
-    @within ThreadScheduler
+    @within TaskScheduler
     @param Time number?
     @param Task (A...) -> R...
     @param ... A...
     @return ThreadProxy
 ]=]
-function ThreadScheduler.Delay<A..., R...>(self: Types.ThreadScheduler, Time: number?, Task: (A...) -> R..., ...: A...)
+function TaskScheduler.Delay<A..., R...>(self: RuntimeTypes.TaskScheduler, Time: number?, Task: (A...) -> R..., ...: A...)
     local Maid = self._Maid
 
     local Context: Context = {}
@@ -121,42 +121,56 @@ function ThreadScheduler.Delay<A..., R...>(self: Types.ThreadScheduler, Time: nu
 
     local TaskId = Maid:GiveTask(Thread)
     Context[1] = TaskId
-    return ThreadProxy.new(Thread, function() Maid[TaskId] = nil end)
+    return ThreadProxy.new(Thread, function() Maid._tasks[TaskId] = nil end)
+end
+
+--[=[ 
+   @method RunTracked
+   @within TaskScheduler
+   @param Task (A...) -> R...
+   @param ... A...
+   @return R...
+]=]
+function TaskScheduler.RunTracked<A..., R...>(self: RuntimeTypes.TaskScheduler, Task: (A...) -> R..., ...: A...): R...
+    return RunTracked(self._Maid, Task, ...)
 end
 
 --[=[
     @method Wait
-    @within ThreadScheduler
+    @within TaskScheduler
     @param Time number
     @return number
+    @yields
 ]=]
-function ThreadScheduler.Wait<A..., R...>(self: Types.ThreadScheduler, Time: number)
+function TaskScheduler.Wait<A..., R...>(self: RuntimeTypes.TaskScheduler, Time: number)
     local Maid = self._Maid
     return RunTracked(Maid, task.wait, Time)
 end
 
 --[=[
     @method Desynchronize
-    @within ThreadScheduler
+    @within TaskScheduler
+    @yields
 ]=]
-function ThreadScheduler.Desynchronize(self: Types.ThreadScheduler)
+function TaskScheduler.Desynchronize(self: RuntimeTypes.TaskScheduler)
     local Maid = self._Maid
     RunTracked(Maid, task.desynchronize)
 end
 
 --[=[
     @method Synchronize
-    @within ThreadScheduler
+    @within TaskScheduler
+    @yields
 ]=]
-function ThreadScheduler.Synchronize(self: Types.ThreadScheduler)
+function TaskScheduler.Synchronize(self: RuntimeTypes.TaskScheduler)
     local Maid = self._Maid
     RunTracked(Maid, task.synchronize)
 end
 
 --[=[
     @method Destroy
-    @within ThreadScheduler
+    @within TaskScheduler
 ]=]
-function ThreadScheduler.Destroy(self: Types.ThreadScheduler) self._Maid:Destroy() end
+function TaskScheduler.Destroy(self: RuntimeTypes.TaskScheduler) self._Maid:Destroy() end
 
-return ThreadScheduler
+return TaskScheduler

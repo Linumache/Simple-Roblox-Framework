@@ -2,7 +2,7 @@
     @class ErrorContext
 ]=]
 
-local Types = require("./Types")
+local RuntimeTypes = require("./RuntimeTypes")
 
 local ErrorContext = {}
 ErrorContext.__index = ErrorContext
@@ -31,7 +31,7 @@ function ErrorContext.new(Name: string, ErrorMessage: string, StackTraceLevel: n
         Name = Name,
         ErrorMessage = ErrorMessage,
         StackTrace = debug.traceback(ErrorMessage, StackTraceLevel + 1),
-    }, ErrorContext) :: Types.ErrorContext
+    }, ErrorContext) :: RuntimeTypes.ErrorContext
     return self
 end
 
@@ -39,8 +39,8 @@ end
     @method PrintError
     @within ErrorContext
 ]=]
-function ErrorContext.PrintError(self: Types.ErrorContext)
-    task.spawn(error, `App "{self.Name}" failed to run. Most recent stack trace:\n{self.StackTrace}`, 0)
+function ErrorContext.PrintError(self: RuntimeTypes.ErrorContext)
+    task.spawn(error, `[{self.Name}] - App has crashed! Most recent stack trace:\n{self.StackTrace}`, 0)
 end
 
 return ErrorContext

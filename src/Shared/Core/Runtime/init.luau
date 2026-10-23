@@ -9,7 +9,7 @@
 
 local AppContext = require("@self/AppContext")
 local ErrorContext = require("@self/ErrorContext")
-local Types = require("@self/Types")
+local RuntimeTypes = require("@self/RuntimeTypes")
 
 local Runtime = {}
 
@@ -19,16 +19,18 @@ local Runtime = {}
     @return boolean
     @return AppContext | ErrorContext
 ]=]
-function Runtime.Launch(AppManifest: Types.AppManifest): (boolean, Types.AppContext | Types.ErrorContext)
+function Runtime.Launch(
+    AppManifest: RuntimeTypes.AppManifest
+): (boolean, RuntimeTypes.AppContext | RuntimeTypes.ErrorContext)
     local Name = AppManifest.Name
-    assert(type(Name) == "string", "[Runtime] - Launch: bad manifest field `Name`")
+    if type(Name) ~= "string" then error("[Runtime] - Launch: bad manifest field `Name`", 0) end
     local Run = AppManifest.Run
-    assert(type(Run) == "function", "[Runtime] - Launch: bad manifest field `Run`")
+    if type(Run) ~= "function" then error("[Runtime] - Launch: bad manifest field `Run`", 0) end
 
     local AppContext = AppContext.new(Name)
     if AppManifest.Disabled then return true, AppContext end
 
-    local Succeeded, _ErrorContext: Types.ErrorContext
+    local Succeeded, _ErrorContext: RuntimeTypes.ErrorContext
 
     local Thread = task.spawn(function()
         Succeeded, _ErrorContext = xpcall(Run :: any, function(Error: string)
@@ -37,7 +39,8 @@ function Runtime.Launch(AppManifest: Types.AppManifest): (boolean, Types.AppCont
             local ErrorContext = ErrorContext.new(Name, Error, 2)
             local OnCrash = AppManifest.OnCrash
             if OnCrash then
-                pcall(OnCrash, ErrorContext)
+                local Thread = task.spawn(OnCrash, ErrorContext)
+                if coroutine.status(Thread) ~= "dead" then task.cancel(Thread) end
             else
                 ErrorContext:PrintError()
             end
@@ -48,7 +51,8 @@ function Runtime.Launch(AppManifest: Types.AppManifest): (boolean, Types.AppCont
 
     if coroutine.status(Thread) ~= "dead" then
         task.cancel(Thread)
-        error("[Runtime] - Launch: `Run` should not yield")
+        pcall(AppContext.Destroy, AppContext)
+        error("[Runtime] - Launch: `AppManifest.Run` should not yield", 0)
     end
 
     if Succeeded then return true, AppContext end
@@ -57,34 +61,39 @@ end
 
 --[=[
     @within Runtime
-    @param Apps { Instance }
+    @param Apps { any | Instance | AppManifest }
     @return { AppContext }
     @return { ErrorContext }
+    @return number -- detected manifest count
 ]=]
-function Runtime.LaunchBatch(Apps: { Instance })
-    local AppContexts: { Types.AppContext } = {}
-    local ErrorContexts: { Types.ErrorContext } = {}
+function Runtime.LaunchBatch(Apps: { any | Instance | RuntimeTypes.AppManifest })
+    local AppContexts: { RuntimeTypes.AppContext } = {}
+    local ErrorContexts: { RuntimeTypes.ErrorContext } = {}
 
-    local AppManifests: { Types.AppManifest } = {}
+    local AppManifests: { RuntimeTypes.AppManifest } = {}
 
     for _, App in Apps do
-        if not App:IsA("ModuleScript") then continue end
+        if type(App) ~= "table" then
+            if not App:IsA("ModuleScript") then continue end
 
-        local RequireSucceeded, AppManifest = pcall(require, App)
-        if not RequireSucceeded then
-            warn(`[Runtime] - LaunchBatch: error requiring app '{App:GetFullName()}': {AppManifest}`)
-            continue
-        elseif type(AppManifest) ~= "table" then
-            warn(`[Runtime] - LaunchBatch: malformed app manifest at '{App:GetFullName()}'`)
-            continue
+            local RequireSucceeded, AppManifest = pcall(require, App)
+            if not RequireSucceeded then
+                warn(`[Runtime] - LaunchBatch: error requiring app '{App:GetFullName()}': {AppManifest}`)
+                continue
+            elseif type(AppManifest) ~= "table" then
+                warn(`[Runtime] - LaunchBatch: malformed app manifest at '{App:GetFullName()}'`)
+                continue
+            end
+
+            App = AppManifest
         end
 
-        AppManifests[#AppManifests + 1] = AppManifest
+        AppManifests[#AppManifests + 1] = App
     end
 
     table.sort(
         AppManifests :: any,
-        function(A: Types.AppManifest, B: Types.AppManifest) return (A.Priority or 0) > (B.Priority or 0) end
+        function(A: RuntimeTypes.AppManifest, B: RuntimeTypes.AppManifest) return (A.Priority or 0) > (B.Priority or 0) end
     )
 
     for _, AppManifest in AppManifests do
@@ -101,7 +110,20 @@ function Runtime.LaunchBatch(Apps: { Instance })
         end
     end
 
-    return AppContexts, ErrorContexts
+    return AppContexts, ErrorContexts, #AppManifests
+end
+
+--[=[
+    @within Runtime
+    @param SelfAppContext AppContext
+    @param SubAppManifest AppManifest
+    @return boolean
+    @return AppContext | ErrorContext
+]=]
+function Runtime.LaunchSubApp(SelfAppContext: RuntimeTypes.AppContext, SubAppManifest: RuntimeTypes.AppManifest)
+    local Succeeded, SubContext = Runtime.Launch(SubAppManifest)
+    if Succeeded then SelfAppContext.Maid:GiveTask(SubContext) end
+    return Succeeded, SubContext
 end
 
 return Runtime

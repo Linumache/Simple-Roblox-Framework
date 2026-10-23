@@ -9,34 +9,48 @@ url = "https://Linumache.github.io"
 baseUrl = "/Simple-Roblox-Framework/"
 
 [home]
-enabled = false
+enabled = true
+includeReadme = false
 
 [[classOrder]]
 section = "Core"
+collapsed = false
 
 [[classOrder.items]]
 section = "Runtime"
-classes = [ "Runtime", "ErrorContext" ]
+collapsed = false
+classes = [ "Runtime", "ErrorContext", "RuntimeConstants" ]
 
 [[classOrder.items.items]]
 section = "AppContext"
-classes = [ "AppContext", "FeatureRegistry", "SignalMemo", "ThreadProxy", "ThreadScheduler" ]
+collapsed = false
+classes = [ "AppContext" ]
 
-[[classOrder.items]]
-section = "Logger"
-classes = [ "Logger" ]
+[[classOrder.items.items.items]]
+section = "ParallelRunner"
+collapsed = false
+classes = [ "ParallelRunner", "ParallelContext", "ParallelThread", "ParallelThreadPool" ]
 
-[[classOrder.items.items]]
-section = "LoggerOutput"
-classes = [ "LoggerOutput", "RingBuffer" ]
+[[classOrder.items.items.items]]
+section = "TaskScheduler"
+collapsed = false
+classes = [ "TaskScheduler", "ThreadProxy" ]
+
+[[classOrder.items.items.items]]
+section = "ValueStore"
+collapsed = false
+classes = [ "ValueStore", "ValueScope" ]
 
 [[classOrder]]
 section = "Modules"
+collapsed = false
 
 [[classOrder.items]]
 section = "App"
+collapsed = false
 classes = [ "AppBuilder" ]
 
 [[classOrder]]
 section = "Packages"
+collapsed = false
 classes = [ "Nevermore" ]

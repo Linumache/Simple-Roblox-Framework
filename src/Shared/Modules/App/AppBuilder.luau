@@ -3,21 +3,21 @@
     Construct the AppManifest quickly using the fluent interface.
 ]=]
 
-local Types = require("../../Core/Runtime/Types")
+local RuntimeTypes = require("../../Core/Runtime/RuntimeTypes")
 
-type Run = index<Types.AppManifest, "Run">
-type OnCrash = index<Types.AppManifest, "OnCrash">
+type Run = index<RuntimeTypes.AppManifest, "Run">
+type OnCrash = index<RuntimeTypes.AppManifest, "OnCrash">
 
 --[=[
     @within AppBuilder
     @type AppManifest AppManifest
 ]=]
-export type AppManifest = Types.AppManifest
+export type AppManifest = RuntimeTypes.AppManifest
 --[=[
     @within AppBuilder
     @type AppContext AppContext
 ]=]
-export type AppContext = Types.AppContext
+export type AppContext = RuntimeTypes.AppContext
 
 local AppBuilder = {}
 AppBuilder.__index = AppBuilder
