@@ -100,7 +100,12 @@ end
     @return R...
     @yields
 ]=]
-function ParallelRunner.RunAsync<A..., R...>(self: RuntimeTypes.ParallelRunner, JobModule: ModuleScript, TimeBudget: number?, ...: A...)
+function ParallelRunner.RunAsync<A..., R...>(
+    self: RuntimeTypes.ParallelRunner,
+    JobModule: ModuleScript,
+    TimeBudget: number?,
+    ...: A...
+)
     local Thread, Identity = self._Pool:Borrow()
 
     Thread:EnsureReady()

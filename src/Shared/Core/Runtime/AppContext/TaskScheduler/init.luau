@@ -4,8 +4,8 @@
 
 local Nevermore = require("../../../Packages/Nevermore")
 local NevermoreTypes = require("../../../Packages/Nevermore/NevermoreTypes")
-local ThreadProxy = require("@self/ThreadProxy")
 local RuntimeTypes = require("../RuntimeTypes")
+local ThreadProxy = require("@self/ThreadProxy")
 
 local Maid = Nevermore("Maid") :: NevermoreTypes.MaidModule
 

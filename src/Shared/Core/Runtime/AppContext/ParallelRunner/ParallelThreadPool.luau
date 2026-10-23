@@ -4,8 +4,8 @@
 
 --!optimize 2
 
-local RuntimeConstants = require("../../RuntimeConstants")
 local ParallelThread = require("./ParallelThread")
+local RuntimeConstants = require("../../RuntimeConstants")
 local RuntimeTypes = require("../../RuntimeTypes")
 
 local ParallelThreadPool = {}
@@ -36,7 +36,9 @@ local function GetLeastBusyThread(self: RuntimeTypes.ParallelThreadPool): Runtim
     return LeastBusyThread
 end
 
-local function IdleToBusySorter(A: RuntimeTypes.ParallelThread, B: RuntimeTypes.ParallelThread) return A.RefCount < B.RefCount end
+local function IdleToBusySorter(A: RuntimeTypes.ParallelThread, B: RuntimeTypes.ParallelThread)
+    return A.RefCount < B.RefCount
+end
 
 local function MakeIdentity() return tostring({}) .. os.clock() end
 

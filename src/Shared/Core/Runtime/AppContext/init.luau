@@ -5,8 +5,8 @@
 local Nevermore = require("../../Packages/Nevermore")
 local NevermoreTypes = require("../../Packages/Nevermore/NevermoreTypes")
 local ParallelRunner = require("@self/ParallelRunner")
-local TaskScheduler = require("@self/TaskScheduler")
 local RuntimeTypes = require("./RuntimeTypes")
+local TaskScheduler = require("@self/TaskScheduler")
 local ValueScope = require("@self/ValueStore/ValueScope")
 local ValueStore = require("@self/ValueStore")
 
